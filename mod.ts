@@ -45,8 +45,17 @@ const confirmRun = confirm(
 if (confirmRun) {
   console.log(`$ ${shellCommand.trim()}`);
 
-  const result = await Deno.run({
-    cmd: ['bash', '-c', `"${shellCommand}"`],
+  // save the command to a temp file, then use bash to run the file
+
+  const file = Deno.makeTempFileSync();
+  await Deno.writeTextFile(file, shellCommand);
+
+  // run the command in the foreground
+  const result = Deno.run({
+    cmd: ['bash', file],
+    stdout: 'inherit',
+    stderr: 'inherit',
   });
-  console.log(result);
+
+  await result.status();
 }
