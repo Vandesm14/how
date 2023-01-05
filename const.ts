@@ -19,4 +19,5 @@ export const CONFIG = {
       return path.join(CONFIG.PATH, 'api_key');
     },
   },
+  HISTFILE: path.join(HOME_DIR, '.how_history'),
 };

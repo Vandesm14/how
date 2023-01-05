@@ -50,6 +50,15 @@ export default async function to(
   if (confirmRun) {
     console.log(`$ ${shellCommand.trim()}`);
 
+    // TODO: This doesn't work because deno doesn't have access to that env var. Once the config system is in place, this can be used to save the command to the shell history
+    // const SHELL_HISTORY_FILE = Deno.env.get('HISTFILE') || '';
+
+    // if (SHELL_HISTORY_FILE) {
+    //   Deno.writeTextFileSync(SHELL_HISTORY_FILE, shellCommand, {
+    //     append: true,
+    //   });
+    // }
+
     // save the command to a temp file, then use bash to run the file
     const file = Deno.makeTempFileSync();
     await Deno.writeTextFile(file, shellCommand);
