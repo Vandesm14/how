@@ -54,6 +54,15 @@ await new Command()
     const history = Deno.readTextFileSync(config.getKey('history-file'));
     console.log(history.split('\n').reverse().slice(0, limit).join('\n'));
   })
+  // Clear history
+  .command('history-clear')
+  .description('Clears the history of commands.')
+  .action(() => {
+    const sure = confirm('Are you sure you want to clear the history?');
+    if (sure) {
+      Deno.writeTextFileSync(config.getKey('history-file'), '');
+    }
+  })
   // Generate shell commands
   .command('to')
   .description('Prompts the AI to generate a command.')
