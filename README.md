@@ -1,6 +1,8 @@
-# How?
+# How
 
-An AI-powered tool to create tailored commands just when you need them!
+An AI-powered tool to create tailored commands all within the comforts of your shell!
+
+**Sneak peek:** `how to create a new file` -> `touch file.txt`
 
 ## Installation
 
@@ -41,7 +43,7 @@ how config key <your key>
 
 $ how to create a new file
 # Do you want to run the following command(s)?
-# touch shane.txt [y/N] y
+# touch file.txt [y/N] y
 # $ touch shane.txt
 ```
 
