@@ -1,18 +1,16 @@
 import { OpenAI } from 'https://deno.land/x/openai@v1.1.0/mod.ts';
+import { buildPrompt } from '../lib/prompt.ts';
 
 export default async function to(
   API_KEY: string,
-  mainPrompt: string,
+  question: string,
   debug?: boolean
 ) {
   const api = new OpenAI(API_KEY);
 
-  async function generateShellCommands(
-    prompt: string,
-    context: string
-  ): Promise<string> {
+  async function generateShellCommands(): Promise<string> {
     const model = 'text-davinci-003';
-    const fullPrompt = `Generate a shell command to: ${prompt}\nContext: ${context}\n$`;
+    const fullPrompt = buildPrompt(question);
 
     if (debug) {
       console.log('generated prompt:', fullPrompt);
@@ -34,14 +32,7 @@ export default async function to(
     return choices[0].text.trim();
   }
 
-  const contextData = {
-    os: Deno.build.os,
-    user: Deno.env.get('USER'),
-  };
-
-  const context = `I am using the ${contextData.os} OS (username is ${contextData.user}).`;
-
-  const shellCommand = await generateShellCommands(mainPrompt, context);
+  const shellCommand = await generateShellCommands();
 
   const confirmRun = confirm(
     `Do you want to run the following command(s)?\n${shellCommand}`
