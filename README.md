@@ -2,31 +2,49 @@
 
 An AI-powered tool to create tailored commands just when you need them!
 
-## `how to <your prompt>`
+## Installation
 
-You can use the `how to` command to create a tailored command for your prompt. For example, if you want to create a command to open a file in your favorite editor, you can use the following command:
+You can either download the binary from the [latest release](https://github.com/vandesm14/how/releases/latest).
 
-```bash
-$ how to open mod.ts in vim
-```
-
-Which results in:
+Or you can build from source (requires [Deno](https://deno.land/)):
 
 ```bash
-Do you want to run the following command(s)?
-nvim /home/shane/mod.ts [y/N]
+git clone https://github.com/vandesm14/how.git
+cd how
+
+chmod +x build.sh
+./build.sh
 ```
 
-If you answer `y`, **how** will create a bash file in the `/tmp` directory and execute it. The bash file will contain the command shown in the message.
+## Usage
 
-You can also simply copy the command and hit enter in the **how** prompt to do nothing.
+### Prerequisites
 
-## `how set-key <GPT API Key>`
+In order to use this, you will need to get an API key from [OpenAI](https://openai.com/). Once you have that, you can either:
 
-**How** is powered by GPT, so you will need to give it your API key to use it. You can get your API key from [OpenAI](https://beta.openai.com/).
+**Use the environment variable**
 
-If you try to use **how** without an API key, it will prompt you to set one.
+```bash
+HOW_OPENAI_KEY=<your key> how to <your prompt>
+```
 
-### Environment variable
+**Use the config editor**
 
-You can use the `HOW_OPENAI_KEY` environment variable to set your API key.
+```bash
+how config key <your key>
+```
+
+### Prompting the AI
+
+```bash
+# how to <your prompt>
+
+$ how to create a new file
+# Do you want to run the followimg command(s)?
+# touch shane.txt [y/N] y
+# $ touch shane.txt
+```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
