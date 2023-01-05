@@ -1,6 +1,7 @@
 import { CONFIG } from './const.ts';
 import { Command } from 'https://deno.land/x/cliffy@v0.25.6/command/mod.ts';
 import to from './cmd/to.ts';
+import { getConfigValue, updateConfig } from './lib/config.ts';
 
 await new Command()
   .name('how')
@@ -16,6 +17,22 @@ await new Command()
 
     Deno.writeTextFileSync(CONFIG.FILE.API_KEY, key);
     console.log('API key saved');
+  })
+  // Set config options
+  .command('set')
+  .arguments('<key> <value>')
+  .action((opts, ...args) => {
+    const [key, value] = args;
+
+    updateConfig(key, value);
+  })
+  // Get config options
+  .command('get')
+  .arguments('<key>')
+  .action((opts, ...args) => {
+    const [key] = args;
+
+    console.log('key:', getConfigValue(key));
   })
   // Generate shell commands
   .command('to')
