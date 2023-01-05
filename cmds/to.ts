@@ -1,4 +1,5 @@
 import { OpenAI } from 'https://deno.land/x/openai@v1.1.0/mod.ts';
+import { config } from '../lib/config.ts';
 import { buildPrompt } from '../lib/prompt.ts';
 
 export default async function to(
@@ -40,6 +41,16 @@ export default async function to(
 
   if (confirmRun) {
     console.log(`$ ${shellCommand.trim()}`);
+
+    const histfile = config.getKey('history-file');
+
+    if (histfile) {
+      try {
+        await Deno.writeTextFile(histfile, shellCommand, { append: true });
+      } catch {
+        console.warn('Could not write to history file.');
+      }
+    }
 
     // save the command to a temp file, then use bash to run the file
     const file = Deno.makeTempFileSync();

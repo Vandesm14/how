@@ -11,17 +11,20 @@ export const PATH = {
   get CONFIG() {
     return path.join(PATH.ROOT, 'config.json');
   },
-  HISTFILE: path.join(HOME_DIR, '.how_history'),
 };
 
 export type Config = {
   key: string;
   anonymous: boolean;
+  'history-file': string;
+  'error-log': string;
 };
 
 export const defaultConfig: Config = {
   key: '',
   anonymous: false,
+  'history-file': path.join(PATH.ROOT, '.how_history'),
+  'error-log': path.join(PATH.ROOT, '.how_error_log'),
 };
 
 function upsertConfigPath() {
@@ -42,12 +45,11 @@ export const config = {
   get(): Config {
     return JSON.parse(Deno.readTextFileSync(PATH.CONFIG));
   },
-  getKey(key: string): any {
+  getKey(key: keyof Config): any {
     const obj = config.get();
-    // @ts-expect-error: This is fine, we're just getting a key
     return obj[key];
   },
-  setKey(key: string, value: any) {
+  setKey(key: keyof Config, value: any) {
     const obj = config.get();
     // @ts-expect-error: This is fine, we're just setting a key
     obj[key] = value;
