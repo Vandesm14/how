@@ -1,7 +1,6 @@
 import { CONFIG } from './const.ts';
 import { Command } from 'https://deno.land/x/cliffy@v0.25.6/command/mod.ts';
 import to from './cmds/to.ts';
-// import { getConfigValue, updateConfig } from './lib/config.ts';
 
 await new Command()
   .name('how')
@@ -33,22 +32,6 @@ await new Command()
       console.log('No API key found');
     }
   })
-  // // Set config options
-  // .command('set')
-  // .arguments('<key> <value>')
-  // .action((_opts, ...args) => {
-  //   const [key, value] = args;
-
-  //   updateConfig(key, value);
-  // })
-  // // Get config options
-  // .command('get')
-  // .arguments('<key>')
-  // .action((_, ...args) => {
-  //   const [key] = args;
-
-  //   console.log('key:', getConfigValue(key));
-  // })
   // Generate shell commands
   .command('to')
   .description('Prompts the AI to generate a command.')
