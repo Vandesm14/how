@@ -1,6 +1,6 @@
 import { Command } from 'https://deno.land/x/cliffy@v0.25.6/command/mod.ts';
 import to from './cmds/to.ts';
-import { config } from './lib/config.ts';
+import { config, defaultConfig } from './lib/config.ts';
 
 await new Command()
   .name('how')
@@ -10,13 +10,26 @@ await new Command()
   .allowEmpty(false)
   // Configuration
   .command('config')
-  .description('Manage the configuration.')
+  .description(
+    `Manage the configuration.\nValid keys: ${Object.keys(defaultConfig)}`
+  )
   .arguments('<key:string> [value:string]')
   .action((_, key, value) => {
     if (value) {
       config.setKey(key, value);
     } else {
       console.log(config.getKey(key));
+    }
+  })
+  // Reset config
+  .command('config-reset')
+  .description('Resets the configuration.')
+  .action(() => {
+    const sure = confirm('Are you sure you want to reset the config?');
+    if (sure) {
+      config.reset();
+
+      console.log('Config reset.');
     }
   })
   // Generate shell commands

@@ -15,12 +15,12 @@ export const PATH = {
 };
 
 export type Config = {
-  apiKey: string;
+  key: string;
   anonymous: boolean;
 };
 
 export const defaultConfig: Config = {
-  apiKey: '',
+  key: '',
   anonymous: false,
 };
 
@@ -53,5 +53,8 @@ export const config = {
     obj[key] = value;
 
     Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(obj));
+  },
+  reset() {
+    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(defaultConfig));
   },
 };
