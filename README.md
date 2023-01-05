@@ -1,8 +1,10 @@
 # How
 
-An AI-powered tool to create tailored commands all within the comforts of your shell!
+**Disclaimer:** This is currently only for Linux and isn't built for Windows or Mac.
 
-**Sneak peek:** `how to create a new file` -> `touch file.txt`
+**How** is an AI-powered tool to create tailored commands all within the comforts of your shell!
+
+![](how.png)
 
 ## Installation
 
@@ -50,3 +52,23 @@ $ how to create a new file
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue to discuss what you would like to change.
+
+## FAQ
+
+### How do I change my privacy settings?
+
+When you first run **how** (such as `how to get the time`), our magical wizard will ask you a few questions. This will include whether you would like to send extra contextual data in the prompt to OpenAI such as your username and OS distro.
+
+You can change this at any time by running `how config anonymous <true | false>`. This will update the config file located at `~/.config/how/config.json`.
+
+### Where is the data stored?
+
+All data related to **how** is stored in the `~/.config/how` directory. This includes the config file and history.
+
+### How do I edit the data sent to OpenAI?
+
+Configuring the data sent to OpenAI is not editable via config. Instead, it requires a rebuild of the binary. To do this, you will need to:
+
+1. Clone the repository
+2. Edit the `lib/prompt.ts` file to your liking
+3. Build the project (see [Installation](#installation))
