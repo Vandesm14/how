@@ -20,16 +20,17 @@ await new Command()
   .arguments('<prompt...:string>')
   .action(async (opts, ...args) => {
     const prompt = args.join(' ');
-    const API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
 
-    if (!API_KEY || API_KEY === '') {
+    try {
+      const API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
+
+      await to(API_KEY, prompt, opts.debug);
+    } catch (e) {
       console.log(
         'No API key found. Use `how set-key <key>` to set your API key'
       );
       Deno.exit(0);
     }
-
-    await to(API_KEY, prompt, opts.debug);
   })
   .parse(Deno.args);
 
