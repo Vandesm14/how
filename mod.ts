@@ -5,7 +5,7 @@ import { config } from './lib/config.ts';
 await new Command()
   .name('how')
   .version('0.1.0')
-  .description('A command-line tool to generate shell commands')
+  .description('A command-line tool to generate shell commands.')
   // NOTE: this doesn't work (on arch)
   .allowEmpty(false)
   // Configuration
