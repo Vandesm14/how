@@ -1,4 +1,3 @@
-import { PATH } from './const.ts';
 import { Command } from 'https://deno.land/x/cliffy@v0.25.6/command/mod.ts';
 import to from './cmds/to.ts';
 import { config } from './lib/config.ts';
