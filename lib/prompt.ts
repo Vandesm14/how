@@ -1,13 +1,20 @@
+import { parse } from 'https://deno.land/x/properties@v1.0.1/mod.ts';
+import { config } from './config.ts';
+
 const contextData = {
-  OS: Deno.build.os,
+  OS: parse(Deno.readTextFileSync('/etc/os-release'))?.NAME || 'unknown',
   username: Deno.env.get('USER'),
   shell: Deno.env.get('SHELL'),
 };
 
-const context = `I am using the ${contextData.OS} OS with the ${contextData.shell} shell, and my username is ${contextData.username}}`;
+const context = `Context: I am using the ${contextData.OS} OS with the ${contextData.shell} shell, and my username is ${contextData.username}\n`;
 
 export const buildPrompt = (howTo: string) => {
-  return `Generate a shell command to: ${howTo}\nContext: ${context}\n$`;
+  const isAnonymous = config.getKey('anonymous');
+
+  return `Generate a shell command to: ${howTo}\n${
+    !isAnonymous ? context : ''
+  }$`;
 };
 
 // "key, key, and key"

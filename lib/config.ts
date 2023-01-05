@@ -37,9 +37,9 @@ function upsertConfigPath() {
     console.log('Welcome to how! I am the setup magical wizard!');
     console.log('I will now ask you a few questions to get you started.');
     const notAnonymous = confirm(
-      `We can include your ${dataCollectedString} in the context sent to OpenAI. Would you like us to include this data?`
+      `We can include your ${dataCollectedString} in the OpanAI prompt. Would you like to do this?`
     );
-    const key = prompt('Great! Next, enter your OpenAI API key:');
+    const key = prompt('Great! Next, please enter your OpenAI API key:');
 
     const newConfig = Object.assign(defaultConfig, {
       key,
