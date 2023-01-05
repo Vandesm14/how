@@ -11,26 +11,33 @@ await new Command()
   .arguments('<api-key>')
   .action((opts, ...args) => {
     const [key] = args;
+
+    Deno.mkdirSync(CONFIG.PATH, { recursive: true });
+
     Deno.writeTextFileSync(CONFIG.FILE.API_KEY, key);
     console.log('API key saved');
   })
   // Generate shell commands
   .command('to')
   .option('--debug', 'Enable debug mode')
+  .env('HOW_OPENAI_KEY=<value:string>', 'The API key for OpenAI')
   .arguments('<prompt...:string>')
   .action(async (opts, ...args) => {
     const prompt = args.join(' ');
+    let API_KEY = Deno.env.get('HOW_OPENAI_KEY');
 
-    try {
-      const API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
-
-      await to(API_KEY, prompt, opts.debug);
-    } catch (e) {
-      console.log(
-        'No API key found. Use `how set-key <key>` to set your API key'
-      );
-      Deno.exit(0);
+    if (!API_KEY || API_KEY === '') {
+      try {
+        API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
+      } catch (e) {
+        console.log(
+          'No API key found. Use `how set-key <key>` to set your API key'
+        );
+        Deno.exit(0);
+      }
     }
+
+    await to(API_KEY, prompt, opts.debug);
   })
   .parse(Deno.args);
 
