@@ -18,6 +18,16 @@ await new Command()
     Deno.writeTextFileSync(CONFIG.FILE.API_KEY, key);
     console.log('API key saved');
   })
+  .command('get-key')
+  .action(() => {
+    try {
+      const key = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
+
+      console.log('key:', key);
+    } catch (e) {
+      console.log('No API key found');
+    }
+  })
   // Set config options
   .command('set')
   .arguments('<key> <value>')
@@ -48,7 +58,7 @@ await new Command()
         API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
       } catch (e) {
         console.log(
-          'No API key found. Use `how set-key <key>` to set your API key'
+          'No API key found. Use `how set-key <key>` or set the `HOW_OPENAI_KEY` env var'
         );
         Deno.exit(0);
       }
@@ -57,10 +67,3 @@ await new Command()
     await to(API_KEY, prompt, opts.debug);
   })
   .parse(Deno.args);
-
-let API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
-
-if (!API_KEY || API_KEY === '') {
-  console.log('No API key found. Use `how set-key <key>` to set your API key');
-  Deno.exit(0);
-}
