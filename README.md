@@ -4,7 +4,7 @@ An AI-powered tool to create tailored commands just when you need them!
 
 ## Installation
 
-You can either download the binary from the [latest release](https://github.com/vandesm14/how/releases/latest).
+You can download the binary from the [latest release](https://github.com/vandesm14/how/releases/latest).
 
 Or you can build from source (requires [Deno](https://deno.land/)):
 
@@ -20,7 +20,7 @@ chmod +x build.sh
 
 ### Prerequisites
 
-In order to use this, you will need to get an API key from [OpenAI](https://openai.com/). Once you have that, you can either:
+You will need to get an API key from [OpenAI](https://openai.com/). Once you have that, you can either:
 
 **Use the environment variable**
 
@@ -40,11 +40,11 @@ how config key <your key>
 # how to <your prompt>
 
 $ how to create a new file
-# Do you want to run the followimg command(s)?
+# Do you want to run the following command(s)?
 # touch shane.txt [y/N] y
 # $ touch shane.txt
 ```
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an issue to discuss what you would like to change.
