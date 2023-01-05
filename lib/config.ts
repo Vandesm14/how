@@ -17,14 +17,12 @@ export type Config = {
   key: string;
   anonymous: boolean;
   'history-file': string;
-  'error-log': string;
 };
 
 export const defaultConfig: Config = {
   key: '',
   anonymous: false,
   'history-file': path.join(PATH.ROOT, '.how_history'),
-  'error-log': path.join(PATH.ROOT, '.how_error_log'),
 };
 
 function upsertConfigPath() {
@@ -36,6 +34,13 @@ function upsertConfigPath() {
     Deno.readTextFileSync(PATH.CONFIG);
   } catch {
     Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(defaultConfig));
+  }
+
+  // if history file doesn't exist, create it
+  try {
+    Deno.readTextFileSync(defaultConfig['history-file']);
+  } catch {
+    Deno.writeTextFileSync(defaultConfig['history-file'], '');
   }
 }
 
@@ -54,6 +59,9 @@ export const config = {
     // @ts-expect-error: This is fine, we're just setting a key
     obj[key] = value;
 
+    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(obj));
+  },
+  setAll(obj: Config) {
     Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(obj));
   },
   reset() {

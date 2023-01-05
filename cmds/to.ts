@@ -46,7 +46,9 @@ export default async function to(
 
     if (histfile) {
       try {
-        await Deno.writeTextFile(histfile, shellCommand, { append: true });
+        await Deno.writeTextFile(histfile, `${Date.now()};${shellCommand}\n`, {
+          append: true,
+        });
       } catch {
         console.warn('Could not write to history file.');
       }

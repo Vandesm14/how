@@ -34,6 +34,26 @@ await new Command()
       console.log('Config reset.');
     }
   })
+  // Fix config
+  .command('config-fix')
+  .description('Fixes the configuration.')
+  .action(() => {
+    // fills in missing keys
+    const obj = config.get();
+    const newConfig = Object.assign(defaultConfig, obj);
+
+    config.setAll(newConfig);
+  })
+  // View history
+  .command('history')
+  .description('View the history of commands.')
+  .arguments('[limit:number]')
+  .action((_, rawLimit) => {
+    const limit = rawLimit ?? 10;
+
+    const history = Deno.readTextFileSync(config.getKey('history-file'));
+    console.log(history.split('\n').reverse().slice(0, limit).join('\n'));
+  })
   // Generate shell commands
   .command('to')
   .description('Prompts the AI to generate a command.')
