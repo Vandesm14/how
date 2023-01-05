@@ -34,12 +34,13 @@ function upsertConfigPath() {
   try {
     Deno.readTextFileSync(PATH.CONFIG);
   } catch {
+    // start the wizard (poof!)
     console.log('Welcome to how! I am the setup magical wizard!');
     console.log('I will now ask you a few questions to get you started.');
     const notAnonymous = confirm(
       `We can include your ${dataCollectedString} in the OpanAI prompt. Would you like to do this?`
     );
-    const key = prompt('Great! Next, please enter your OpenAI API key:');
+    const key = prompt('Next, please enter your OpenAI API key:');
 
     const newConfig = Object.assign(defaultConfig, {
       key,
