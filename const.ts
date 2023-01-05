@@ -6,18 +6,10 @@ if (!HOME_DIR) {
   throw new Error('Unable to determine home directory');
 }
 
-export const CONFIG = {
-  PATH: path.join(HOME_DIR, '.config', 'how'),
-  FILE: {
-    get PRIVACY_AGREEMENT() {
-      return path.join(CONFIG.PATH, 'privacy_agreement');
-    },
-    get CONFIG() {
-      return path.join(CONFIG.PATH, 'config.json');
-    },
-    get API_KEY() {
-      return path.join(CONFIG.PATH, 'api_key');
-    },
+export const PATH = {
+  ROOT: path.join(HOME_DIR, '.config', 'how'),
+  get CONFIG() {
+    return path.join(PATH.ROOT, 'config.json');
   },
   HISTFILE: path.join(HOME_DIR, '.how_history'),
 };

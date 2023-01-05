@@ -1,26 +1,43 @@
-import { CONFIG } from '../const.ts';
+import { PATH } from '../const.ts';
 
-export const store = {
-  getAll: () => {
-    try {
-      const config = Deno.readTextFileSync(CONFIG.FILE.CONFIG);
-      return JSON.parse(config);
-    } catch {
-      return {};
-    }
+export type Config = {
+  apiKey: string;
+  anonymous: boolean;
+};
+
+export const defaultConfig: Config = {
+  apiKey: '',
+  anonymous: false,
+};
+
+function upsertConfigPath() {
+  // create the config directory (upserts)
+  Deno.mkdirSync(PATH.ROOT, { recursive: true });
+
+  // if config file doesn't exist, create it
+  try {
+    Deno.readTextFileSync(PATH.CONFIG);
+  } catch {
+    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(defaultConfig));
+  }
+}
+
+upsertConfigPath();
+
+export const config = {
+  get(): Config {
+    return JSON.parse(Deno.readTextFileSync(PATH.CONFIG));
   },
-  get: <T>(key: string): T => {
-    const config = store.getAll();
-    return config[key];
+  getKey(key: string): any {
+    const obj = config.get();
+    // @ts-expect-error: This is fine, we're just getting a key
+    return obj[key];
   },
-  set: async <T>(key: string, value: T) => {
-    const config = store.getAll();
-    config[key] = value;
-    await Deno.writeTextFile(CONFIG.FILE.CONFIG, JSON.stringify(config));
-  },
-  setPartial: async (partial: Record<string, any>) => {
-    const config = store.getAll();
-    Object.assign(config, partial);
-    await Deno.writeTextFile(CONFIG.FILE.CONFIG, JSON.stringify(config));
+  setKey(key: string, value: any) {
+    const obj = config.get();
+    // @ts-expect-error: This is fine, we're just setting a key
+    obj[key] = value;
+
+    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(obj));
   },
 };
