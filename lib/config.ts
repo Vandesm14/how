@@ -1,4 +1,5 @@
 import * as path from 'https://deno.land/std@0.170.0/path/mod.ts';
+import { dataCollectedString } from './prompt.ts';
 
 const HOME_DIR = Deno.env.get('HOME') || Deno.env.get('USERPROFILE') || '';
 
@@ -33,7 +34,19 @@ function upsertConfigPath() {
   try {
     Deno.readTextFileSync(PATH.CONFIG);
   } catch {
-    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(defaultConfig));
+    console.log('Welcome to how! I am the setup magical wizard!');
+    console.log('I will now ask you a few questions to get you started.');
+    const notAnonymous = confirm(
+      `We can include your ${dataCollectedString} in the context sent to OpenAI. Would you like us to include this data?`
+    );
+    const key = prompt('Great! Next, enter your OpenAI API key:');
+
+    const newConfig = Object.assign(defaultConfig, {
+      key,
+      anonymous: !notAnonymous,
+    });
+
+    Deno.writeTextFileSync(PATH.CONFIG, JSON.stringify(newConfig));
   }
 
   // if history file doesn't exist, create it
