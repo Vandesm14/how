@@ -1,66 +1,41 @@
-import { OpenAI } from 'https://deno.land/x/openai@v1.1.0/mod.ts';
+import { CONFIG } from './const.ts';
+import { Command } from 'https://deno.land/x/cliffy@v0.25.6/command/mod.ts';
+import to from './cmd/to.ts';
 
-// Replace `YOUR_API_KEY` with your API key
-const api = new OpenAI('HIDDEN BY REBASE');
-const args = Deno.args;
+await new Command()
+  .name('how')
+  .version('0.1.0')
+  .description('A command-line tool to generate shell commands')
+  // Set the API key
+  .command('set-key')
+  .arguments('<api-key>')
+  .action((opts, ...args) => {
+    const [key] = args;
+    Deno.writeTextFileSync(CONFIG.FILE.API_KEY, key);
+    console.log('API key saved');
+  })
+  // Generate shell commands
+  .command('to')
+  .option('--debug', 'Enable debug mode')
+  .arguments('<prompt...:string>')
+  .action(async (opts, ...args) => {
+    const prompt = args.join(' ');
+    const API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
 
-async function generateShellCommands(
-  prompt: string,
-  context: string
-): Promise<string> {
-  const model = 'text-davinci-003';
+    if (!API_KEY || API_KEY === '') {
+      console.log(
+        'No API key found. Use `how set-key <key>` to set your API key'
+      );
+      Deno.exit(0);
+    }
 
-  const response = await api.createCompletion(
-    `Generate a shell command to: ${prompt}\nContext: ${context}\n$`,
-    model,
-    0.5,
-    1024,
-    1,
-    0,
-    0
-  );
+    await to(API_KEY, prompt, opts.debug);
+  })
+  .parse(Deno.args);
 
-  // @ts-expect-error: `choices` is not defined in the type definition
-  const choices = response.choices;
+let API_KEY = Deno.readTextFileSync(CONFIG.FILE.API_KEY);
 
-  return choices[0].text.trim();
-}
-
-const contextData = {
-  os: Deno.build.os,
-  user: Deno.env.get('USER'),
-};
-
-let mainPrompt = '';
-if (args.length === 0) {
-  // Example usage
-  mainPrompt = prompt('What do you want to do:') ?? '';
-} else {
-  mainPrompt = args.join(' ');
-}
-
-const context =
-  `I am using the ${contextData.os} OS (username is ${contextData.user}).\n` +
-  `If you need more info, you can run a command like "gpt_conditional ls -la" to get the output of the "ls -la" command. Once you have enough info, provide the finished command after the "$"`;
-const shellCommand = await generateShellCommands(mainPrompt, context);
-
-const confirmRun = confirm(
-  `Do you want to run the following command(s)?\n${shellCommand}`
-);
-
-if (confirmRun) {
-  console.log(`$ ${shellCommand.trim()}`);
-
-  // save the command to a temp file, then use bash to run the file
-  const file = Deno.makeTempFileSync();
-  await Deno.writeTextFile(file, shellCommand);
-
-  // run the command in the foreground
-  const result = Deno.run({
-    cmd: ['bash', file],
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
-
-  await result.status();
+if (!API_KEY || API_KEY === '') {
+  console.log('No API key found. Use `how set-key <key>` to set your API key');
+  Deno.exit(0);
 }
