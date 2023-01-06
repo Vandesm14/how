@@ -5,7 +5,7 @@
       "useTabs": false,
       "singleQuote": true,
       "lineWidth": 80,
-      "proseWrap": "preserve"
+      "proseWrap": "never"
     }
   }
 }
