@@ -1,70 +1,61 @@
-import { OpenAI } from 'https://deno.land/x/openai@v1.1.0/mod.ts';
-import { config } from '../lib/config.ts';
-import { buildPrompt } from '../lib/prompt.ts';
+import { Cli, OpenAI } from '../deps.ts';
+import { CONFIG, context } from '../util.ts';
 
-export default async function to(
-  API_KEY: string,
-  question: string,
-  debug?: boolean
-) {
-  const api = new OpenAI(API_KEY);
+const MODEL = 'text-davinci-003';
 
-  async function generateShellCommands(): Promise<string> {
-    const model = 'text-davinci-003';
-    const fullPrompt = buildPrompt(question);
+// TODO(@leonskidev): look into adding aliases for more prompt variations
+export default new Cli.Command()
+  .description('Prompts OpenAI to generate a shell command.')
+  .arguments('<prompt...:string>')
+  .action(async (_, ...args) => {
+    const input = args.join(' ');
+    const prompt =
+      `Generate a shell command to: ${input}.\n${await context()}$`;
 
-    if (debug) {
-      console.log('generated prompt:', fullPrompt);
-    }
+    const response = await new OpenAI(await CONFIG.KEY.get())
+      .createCompletion(
+        prompt,
+        MODEL,
+        0.5,
+        1024,
+        1,
+        0,
+        0,
+      );
+    // @ts-expect-error: `response.choices` is not defined in the type definition
+    const command = response.choices[0].text.trim();
 
-    const response = await api.createCompletion(
-      fullPrompt,
-      model,
-      0.5,
-      1024,
-      1,
-      0,
-      0
-    );
-
-    // @ts-expect-error: `choices` is not defined in the type definition
-    const choices = response.choices;
-
-    return choices[0].text.trim();
-  }
-
-  const shellCommand = await generateShellCommands();
-
-  const confirmRun = confirm(
-    `Do you want to run the following command(s)?\n${shellCommand}`
-  );
-
-  if (confirmRun) {
-    console.log(`$ ${shellCommand.trim()}`);
-
-    const histfile = config.getKey('history-file');
-
-    if (histfile) {
-      try {
-        await Deno.writeTextFile(histfile, `${Date.now()};${shellCommand}\n`, {
-          append: true,
-        });
-      } catch {
-        console.warn('Could not write to history file.');
-      }
-    }
-
-    // save the command to a temp file, then use bash to run the file
-    const file = Deno.makeTempFileSync();
-    await Deno.writeTextFile(file, shellCommand);
-
-    // run the command in the foreground
-    const result = Deno.run({
-      cmd: ['bash', file],
-      stdout: 'inherit',
-      stderr: 'inherit',
+    const shouldRun = await Cli.Confirm.prompt({
+      message: 'Would you like to run the command(s)? (Check before you do!)',
+      hint: command,
     });
 
-    await result.status();
-  }
-}
+    if (shouldRun) {
+      // save the command to a temporary file, then use bash to run the file
+      const file = Deno.makeTempFileSync();
+      await Deno.writeTextFile(file, command);
+
+      // run the command in the foreground
+      const result = Deno.run({
+        // TODO(@leonskidev): add a configuration option to choose the shell to use
+        cmd: ['bash', file],
+        stdout: 'inherit',
+        stderr: 'inherit',
+      });
+
+      await result.status();
+      // await saveConfig();
+
+      // TODO(@leonskidev): re-add this as a configuration option
+      // const histfile = config.getKey('history-file');
+      // if (histfile) {
+      //   try {
+      //     await Deno.writeTextFile(histfile, `${Date.now()};${shellCommand}\n`, {
+      //       append: true,
+      //     });
+      //   } catch {
+      //     console.warn('Could not write to history file.');
+      //   }
+      // }
+    }
+  });
